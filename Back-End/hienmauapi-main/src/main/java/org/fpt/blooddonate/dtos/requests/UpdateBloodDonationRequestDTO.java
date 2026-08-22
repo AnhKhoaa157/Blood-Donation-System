@@ -1,8 +1,11 @@
 package org.fpt.blooddonate.dtos.requests;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +21,8 @@ public class UpdateBloodDonationRequestDTO {
     private String ghiChu;
 
     @NotNull()
+    @Positive
+    @Max(2000)
     private int soLuong;
 
     @NotBlank()
@@ -28,8 +33,12 @@ public class UpdateBloodDonationRequestDTO {
     private String sucKhoeHienTai;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private int dangMangThai;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private int macBenhTruyenNhiem;
 }

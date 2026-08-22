@@ -1,12 +1,12 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CreateSupportTicketRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateStatusSupportTicketRequestDTO;
 import org.fpt.blooddonate.models.SupportTicket;
 import org.fpt.blooddonate.services.SupportTicketService;
 import org.springframework.data.domain.Page;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +14,9 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/support-tickets")
+@RequiredArgsConstructor
 public class SupportTicketController {
-    @Autowired
-    private SupportTicketService supportTicketService;
+    private final SupportTicketService supportTicketService;
 
     @GetMapping
     public ResponseEntity<Page<SupportTicket>> getAll(

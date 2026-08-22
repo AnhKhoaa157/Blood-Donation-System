@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.fpt.blooddonate.models.enums.EmploymentStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ThongTinNhanVien")
+@Table(name = "employees", indexes = {
+        @Index(name = "idx_employees_user_id", columnList = "user_id")
+})
 @Data
 @NoArgsConstructor
 public class EmployeeInformation {
@@ -17,30 +20,31 @@ public class EmployeeInformation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "MaSoNhanVien", nullable = false, unique = true, length = 50)
+    @Column(name = "employee_number", nullable = false, unique = true, length = 50)
     private String maSoNhanVien;
 
-    @Column(name = "ChucVu", length = 100)
+    @Column(name = "job_title", length = 100)
     private String chucVu;
 
-    @Column(name = "PhongBan", length = 100)
+    @Column(name = "department", length = 100)
     private String phongBan;
 
-    @Column(name = "NgayVaoLam")
+    @Column(name = "start_date")
     private LocalDate ngayVaoLam;
 
-    @Column(name = "TrangThaiLamViec")
+    @Convert(converter = EmploymentStatus.JpaStringConverter.class)
+    @Column(name = "employment_status")
     private String trangThaiLamViec;
 
     @OneToOne
-    @JoinColumn(name = "NguoiDungId", unique = true, nullable = false)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     @JsonBackReference
     private User nguoiDung;
 
-    @Column(name = "NgayTao", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime ngayTao = LocalDateTime.now();
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat = LocalDateTime.now();
 
     @PreUpdate

@@ -3,32 +3,36 @@ package org.fpt.blooddonate.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "DanhMucBaiViet")
+@Table(name = "blog_categories")
 public class BlogCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "title", nullable = false)
     private String tieuDe;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "content", nullable = false)
     private String noidung;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 1")
+    @Column(name = "status", nullable = false)
     private Integer trangThai = 1;
 
-    @Column(name = "NgayTao", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime ngayTao;
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat;
 
     @PrePersist

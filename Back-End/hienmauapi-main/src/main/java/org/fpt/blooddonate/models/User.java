@@ -5,13 +5,19 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.fpt.blooddonate.models.converters.LegacyDomainValueConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "NguoiDung")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_users_blood_type_id", columnList = "blood_type_id"),
+        @Index(name = "idx_users_role_status", columnList = "role,status")
+})
 @Data
 @NoArgsConstructor
 public class User {
@@ -20,66 +26,70 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String ten;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String tenDangNhap;
 
     @JsonIgnore
-    @Column(nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String matKhau;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(length = 20)
+    @Column(name = "phone_number", length = 20)
     private String soDienThoai;
 
+    @Column(name = "birth_date")
     private LocalDate ngaySinh;
 
-    @Column(length = 10)
+    @Convert(converter = LegacyDomainValueConverter.class)
+    @Column(name = "gender", length = 10)
     private String gioiTinh;
 
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     private String diaChi;
 
-    @Column(nullable = true)
+    @Column(name = "latitude", nullable = true)
     private double latitude = 21.030653;
 
-    @Column(nullable = true)
+    @Column(name = "longitude", nullable = true)
     private double longitude = 105.847130;
 
     @ManyToOne
-    @JoinColumn(name = "NhomMauId", nullable = true)
+    @JoinColumn(name = "blood_type_id", nullable = true)
     private Blood nhomMau;
 
     @OneToOne(mappedBy = "nguoiDung", cascade = CascadeType.ALL)
     @JsonManagedReference
     private EmployeeInformation thongTinNhanVien;
 
-    @Column(length = 1)
+    @Column(name = "rh_factor", length = 1)
     private String yeuToRh;
 
-    @Column(columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "medical_history")
     private String tienSuBenh;
 
-    @Column(precision = 5, scale = 2)
+    @Column(name = "weight_kg", precision = 5, scale = 2)
     private BigDecimal canNang;
 
-    @Column(precision = 5, scale = 2)
+    @Column(name = "height_cm", precision = 5, scale = 2)
     private BigDecimal chieuCao;
 
-    @Column(nullable = false, length = 20)
+    @Convert(converter = LegacyDomainValueConverter.class)
+    @Column(name = "role", nullable = false, length = 20)
     private String vaiTro;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 1", length = 1)
+    @Column(name = "status", nullable = false)
     private Integer trangThai = 1; // 0: inactive, 1: active
 
-    @Column(name = "NgayTao", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime ngayTao;
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat;
 
     @PrePersist

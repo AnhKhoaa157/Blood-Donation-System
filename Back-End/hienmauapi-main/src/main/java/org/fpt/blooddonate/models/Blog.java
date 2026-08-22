@@ -3,44 +3,50 @@ package org.fpt.blooddonate.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "BaiViet")
+@Table(name = "blog_posts", indexes = {
+        @Index(name = "idx_blog_posts_category_status", columnList = "category_id,status")
+})
 public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "tieude", nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "title", nullable = false)
     private String tieuDe;
 
-    @Column(name = "anh", nullable = false, length = 255)
+    @Column(name = "image_path", nullable = false, length = 255)
     private String anh;
 
     @ManyToOne
-    @JoinColumn(name = "DanhMucId", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private BlogCategory danhMuc;
 
-    @Column(name = "noidung", nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "content", nullable = false)
     private String noiDung;
 
-    @Column(name = "luotxem", nullable = false)
+    @Column(name = "view_count", nullable = false)
     private Integer luotXem = 0;
 
-    @Column(name = "nguoitao", nullable = false)
+    @Column(name = "created_by_id", nullable = false)
     private Integer nguoiTao;
 
-    @Column(name = "trangthai", nullable = false)
+    @Column(name = "status", nullable = false)
     private Integer trangThai = 1; // 0: inactive, 1: active
 
-    @Column(name = "ngaytao", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime ngayTao = LocalDateTime.now();
 
-    @Column(name = "ngaycapnhat", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime ngayCapNhat = LocalDateTime.now();
 
     @PrePersist

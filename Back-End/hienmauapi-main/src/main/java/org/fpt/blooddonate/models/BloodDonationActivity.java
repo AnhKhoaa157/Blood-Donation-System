@@ -3,6 +3,7 @@ package org.fpt.blooddonate.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.fpt.blooddonate.models.enums.BloodDonationActivityStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,50 +11,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "HoatDongHienMau")
+@Table(name = "donation_events", indexes = {
+        @Index(name = "idx_donation_events_status_start_end", columnList = "status,start_date,end_date"),
+        @Index(name = "idx_donation_events_created_by_id", columnList = "created_by_id")
+})
 @Data
 public class BloodDonationActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "name", nullable = false, length = 255)
     private String ten;
 
-    @Column(nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate ngayBatDau;
 
-    @Column(nullable = false)
+    @Column(name = "end_date", nullable = false)
     private LocalDate ngayKetThuc;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "location", nullable = false, length = 255)
     private String diaDiem;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String moTa;
 
-    @Column(nullable = false)
+    @Column(name = "max_participants", nullable = false)
     private Integer soLuongNguoiToiDa;
 
-    @Column(nullable = false)
+    @Column(name = "current_participants", nullable = false)
     private Integer soLuongNguoiDangKyHienTai = 0;
 
     @ManyToOne
-    @JoinColumn(name = "nguoiTaoId")
+    @JoinColumn(name = "created_by_id")
     private User nguoiTao;
 
-    @Column(length = 20)
-    private String trangThaiHoatDong;
+    @Convert(converter = BloodDonationActivityStatus.JpaConverter.class)
+    @Column(name = "status", length = 20)
+    private BloodDonationActivityStatus trangThaiHoatDong;
 
     @OneToMany(mappedBy = "hoatDongHienMau", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<BloodDonationRequest> danhSachYeuCauHieuMau = new ArrayList<>();
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime ngayTao;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime ngayCapNhat;
+
+    @Version
+    @Column(nullable = false)
+    private long version;
 
     @PrePersist
     protected void onCreate() {

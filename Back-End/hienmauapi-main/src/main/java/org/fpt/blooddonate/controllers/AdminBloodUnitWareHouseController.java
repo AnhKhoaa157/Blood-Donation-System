@@ -1,11 +1,11 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CancelBloodUnitWareHouseRequestDTO;
 import org.fpt.blooddonate.dtos.requests.TestedBloodUnitWareHouseRequestDTO;
 import org.fpt.blooddonate.models.BloodUnitWareHouse;
 import org.fpt.blooddonate.services.BloodUnitWareHouseService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +14,9 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/admin/blood-unit-warehouses")
+@RequiredArgsConstructor
 public class AdminBloodUnitWareHouseController {
-    @Autowired
-    private BloodUnitWareHouseService bloodUnitWareHouseService;
+    private final BloodUnitWareHouseService bloodUnitWareHouseService;
 
     @GetMapping
     public ResponseEntity<Page<BloodUnitWareHouse>> getAll(

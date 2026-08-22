@@ -1,11 +1,11 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CreateBloodDonationActivityRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateBloodDonationActivityRequestDTO;
 import org.fpt.blooddonate.models.BloodDonationActivity;
 import org.fpt.blooddonate.services.BloodDonationActivityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/blood-donation-activities")
+@RequiredArgsConstructor
 public class BloodDonationActivityController {
-    @Autowired
-    private BloodDonationActivityService bloodDonationActivityService;
+    private final BloodDonationActivityService bloodDonationActivityService;
 
     @GetMapping
     public ResponseEntity<Page<BloodDonationActivity>> getAll(

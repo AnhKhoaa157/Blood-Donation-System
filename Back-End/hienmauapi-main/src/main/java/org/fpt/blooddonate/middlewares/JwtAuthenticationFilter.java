@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -28,42 +27,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String path = request.getServletPath();
-        if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register") || path.contains("/uploads/") || path.contains("/api/bloods")) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())
+                || request.getServletPath().startsWith("/api/auth/login")
+                || request.getServletPath().startsWith("/api/auth/register")
+                || request.getServletPath().startsWith("/uploads/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
-            if (authUtil.validateToken(token)) {
-                Integer userId = authUtil.extractUserId(token);
-                String role = authUtil.extractRole(token);
-
-                if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                            new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())
-                    );
-
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(userId, null, authorities);
-
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-
-                filterChain.doFilter(request, response);
-                return;
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("UNAUTHORIZED");
-                return;
-            }
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("UNAUTHORIZED");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            // Let Spring Security apply the route-specific authorization rule.
+            filterChain.doFilter(request, response);
             return;
         }
+
+        String token = authHeader.substring(7).trim();
+        if (token.isEmpty() || !authUtil.validateToken(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"status\":401,\"message\":\"Invalid or expired token\"}");
+            return;
+        }
+
+        Integer userId = authUtil.extractUserId(token);
+        String role = authUtil.extractRole(token);
+        if (userId == null || role == null || role.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"status\":401,\"message\":\"Invalid token claims\"}");
+            return;
+        }
+
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userId,
+                            null,
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                    );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        filterChain.doFilter(request, response);
     }
 }

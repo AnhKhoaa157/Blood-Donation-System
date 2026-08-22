@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "NhomMauTuongThich")
+@Table(name = "blood_compatibilities", indexes = {
+        @Index(name = "idx_blood_compatibilities_recipient_blood_type_id", columnList = "recipient_blood_type_id")
+})
 @Data
 @NoArgsConstructor
 public class CompatibleBlood {
@@ -20,19 +22,22 @@ public class CompatibleBlood {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "NhomMauHienId", nullable = false)
+    @JoinColumn(name = "donor_blood_type_id", nullable = false)
     @JsonIgnoreProperties(value = {"danhSachHien", "danhSachNhan"})
     private Blood nhomMauHien;
 
     @ManyToOne
-    @JoinColumn(name = "NhomMauNhanId", nullable = false)
+    @JoinColumn(name = "recipient_blood_type_id", nullable = false)
     @JsonIgnoreProperties(value = {"danhSachHien", "danhSachNhan"})
     private Blood nhomMauNhan;
 
+    @Column(name = "status", nullable = false)
     private Integer trangThai = 1;
 
+    @Column(name = "created_at")
     private LocalDateTime ngayTao;
 
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat;
 
     @PrePersist

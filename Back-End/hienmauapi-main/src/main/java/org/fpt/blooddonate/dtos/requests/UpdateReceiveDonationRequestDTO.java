@@ -17,6 +17,8 @@ public class UpdateReceiveDonationRequestDTO {
     private String thanhPhanMauCan;
 
     @NotNull
+    @Positive
+    @Max(100)
     private Integer soLuongDonVi;
 
     private String lyDo;
@@ -25,14 +27,20 @@ public class UpdateReceiveDonationRequestDTO {
     private String diaChiNhanMau;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private Integer khanCap = 1;
 
     @NotBlank()
     private String sucKhoeHienTai;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private int dangMangThai;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private int macBenhTruyenNhiem;
 }

@@ -6,16 +6,17 @@ import org.fpt.blooddonate.dtos.requests.LoginRequestDTO;
 import org.fpt.blooddonate.dtos.requests.RegisterRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateProfileRequestDTO;
 import org.fpt.blooddonate.dtos.responses.LoginResponseDTO;
+import org.fpt.blooddonate.dtos.responses.UserResponseDTO;
 import org.fpt.blooddonate.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO payload) {
@@ -28,12 +29,12 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequestDTO payload) {
+    public ResponseEntity<UserResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO payload) {
         return ResponseEntity.ok(this.authService.changePassword(payload));
     }
 
     @PostMapping("/update-profile")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfileRequestDTO payload) {
+    public ResponseEntity<UserResponseDTO> updateProfile(@Valid @RequestBody UpdateProfileRequestDTO payload) {
         return ResponseEntity.ok(this.authService.updateProfile(payload));
     }
 }

@@ -3,12 +3,20 @@ package org.fpt.blooddonate.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.fpt.blooddonate.models.converters.LegacyDomainValueConverter;
+import org.fpt.blooddonate.models.enums.BloodUnitStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "KhoDonViMau")
+@Table(name = "blood_units", indexes = {
+        @Index(name = "idx_blood_units_status_expires_at", columnList = "status,expires_at"),
+        @Index(name = "idx_blood_units_blood_type_id", columnList = "blood_type_id"),
+        @Index(name = "idx_blood_units_blood_request_id", columnList = "blood_request_id")
+})
 @Data
 @NoArgsConstructor
 public class BloodUnitWareHouse {
@@ -17,46 +25,53 @@ public class BloodUnitWareHouse {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "NhomMauId")
+    @JoinColumn(name = "blood_type_id")
     private Blood nhomMau;
 
-    @Column(name = "ThanhPhan")
+    @Convert(converter = LegacyDomainValueConverter.class)
+    @Column(name = "blood_component")
     private String thanhPhan = "toanphan";
 
-    @Column(name = "SoLuong")
+    @Column(name = "quantity")
     private int soLuong;
 
-    @Column(name = "NgayLayMau")
+    @Column(name = "collected_at")
     private LocalDateTime ngayLayMau;
 
-    @Column(name = "NgayHetHan")
+    @Column(name = "expires_at")
     private LocalDateTime ngayHetHan;
 
     @ManyToOne
-    @JoinColumn(name = "NguoiHienId")
+    @JoinColumn(name = "donor_id")
     private User nguoiHien;
 
-    @Column(name = "KetQuaXetNghiem", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "test_result")
     private String ketQuaXetNghiem;
 
-    @Column(name = "ViTriLuuTru")
+    @Column(name = "storage_location")
     private String viTriLuuTru;
 
-    @Column(name = "GhiChu")
+    @Column(name = "notes")
     private String ghiChu;
 
-    @Column(name = "TrangThai", nullable = false)
-    private String trangThai = "choxetnghiem";
+    @Convert(converter = BloodUnitStatus.JpaConverter.class)
+    @Column(name = "status", nullable = false, length = 20)
+    private BloodUnitStatus trangThai = BloodUnitStatus.WAITING_FOR_TESTING;
 
     @ManyToOne
-    @JoinColumn(name = "YeuCauCanMauId")
+    @JoinColumn(name = "blood_request_id")
     private BloodReceiveRequest yeuCauCanMau;
 
-    @Column(name = "NgayTao", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime ngayTao = LocalDateTime.now();
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat = LocalDateTime.now();
+
+    @Version
+    @Column(nullable = false)
+    private long version;
 
     @PreUpdate
     public void preUpdate() {

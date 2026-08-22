@@ -24,6 +24,7 @@ public class CreateBloodDonationActivityRequestDTO {
     @NotBlank()
     private String moTa;
 
+    @NotNull
     @Positive()
     private Integer soLuongNguoiToiDa;
 }

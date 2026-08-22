@@ -1,11 +1,11 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CreateNotificationRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateNotificationRequestDTO;
 import org.fpt.blooddonate.models.Notification;
 import org.fpt.blooddonate.services.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/notifications")
+@RequiredArgsConstructor
 public class NotificationController {
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @GetMapping
     public ResponseEntity<Page<Notification>> getAll(

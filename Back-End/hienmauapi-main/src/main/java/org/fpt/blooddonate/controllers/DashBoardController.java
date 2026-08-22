@@ -5,33 +5,21 @@ import org.fpt.blooddonate.dtos.responses.AnalysisResponseDTO;
 import org.fpt.blooddonate.repositories.BloodUnitWareHouseRepository;
 import org.fpt.blooddonate.repositories.UserRepository;
 import org.fpt.blooddonate.services.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/dashboards")
+@RequiredArgsConstructor
 public class DashBoardController {
-    @Autowired
-    private BloodReceiveRequestService bloodReceiveRequestService;
-
-    @Autowired
-    private BloodDonationRequestService bloodDonationRequestService;
-
-    @Autowired
-    private BloodUnitWareHouseService bloodUnitWareHouseService;
-
-    @Autowired
-    private BloodService bloodService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private BloodDonationActivityService bloodDonationActivityService;
-
-    @Autowired
-    private BlogService blogService;
+    private final BloodReceiveRequestService bloodReceiveRequestService;
+    private final BloodDonationRequestService bloodDonationRequestService;
+    private final BloodUnitWareHouseService bloodUnitWareHouseService;
+    private final BloodService bloodService;
+    private final UserService userService;
+    private final BloodDonationActivityService bloodDonationActivityService;
+    private final BlogService blogService;
 
     @GetMapping("/analysis")
     public ResponseEntity<?> analysis() {
