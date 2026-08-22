@@ -7,7 +7,6 @@ import org.fpt.blooddonate.models.Notification;
 import org.fpt.blooddonate.models.User;
 import org.fpt.blooddonate.repositories.NotificationRepository;
 import org.fpt.blooddonate.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +24,13 @@ import java.util.Optional;
 
 @Service
 public class NotificationService {
-    @Autowired
-    private NotificationRepository repository;
+    private final NotificationRepository repository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public NotificationService(NotificationRepository repository, UserRepository userRepository) {
+        this.repository = repository;
+        this.userRepository = userRepository;
+    }
 
     public Page<Notification> getAll(int page, Integer status, String keyword) {
         Pageable pageable = PageRequest.of(page - 1, 10);

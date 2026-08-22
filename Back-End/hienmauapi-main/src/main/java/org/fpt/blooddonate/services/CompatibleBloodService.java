@@ -5,7 +5,6 @@ import org.fpt.blooddonate.dtos.requests.UpdateStatusCompatibleBlood;
 import org.fpt.blooddonate.models.*;
 import org.fpt.blooddonate.repositories.BloodRepository;
 import org.fpt.blooddonate.repositories.CompatibleBloodRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,11 +15,13 @@ import java.util.Optional;
 
 @Service
 public class CompatibleBloodService {
-    @Autowired
-    private CompatibleBloodRepository repository;
+    private final CompatibleBloodRepository repository;
+    private final BloodRepository bloodRepository;
 
-    @Autowired
-    private BloodRepository bloodRepository;
+    public CompatibleBloodService(CompatibleBloodRepository repository, BloodRepository bloodRepository) {
+        this.repository = repository;
+        this.bloodRepository = bloodRepository;
+    }
 
     public List<CompatibleBlood> getAll(int bloodId) {
         return repository.findAllByNhomMauHien(bloodId);

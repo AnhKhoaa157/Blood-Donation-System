@@ -1,12 +1,12 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CreateBlogRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateBlogRequestDTO;
 import org.fpt.blooddonate.models.Blog;
 import org.springframework.data.domain.Page;
 import org.fpt.blooddonate.services.BlogService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +15,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/blogs")
+@RequiredArgsConstructor
 public class BlogController {
-    @Autowired
-    private BlogService blogService;
+    private final BlogService blogService;
 
     @GetMapping
     public ResponseEntity<Page<Blog>> getAll(

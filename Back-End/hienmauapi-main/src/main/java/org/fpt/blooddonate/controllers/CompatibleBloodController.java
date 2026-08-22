@@ -2,7 +2,7 @@ package org.fpt.blooddonate.controllers;
 
 import org.fpt.blooddonate.models.CompatibleBlood;
 import org.fpt.blooddonate.services.CompatibleBloodService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/compatible-bloods")
+@RequiredArgsConstructor
 public class CompatibleBloodController {
-    @Autowired
-    private CompatibleBloodService compatibleBloodService;
+    private final CompatibleBloodService compatibleBloodService;
 
     @GetMapping
     public ResponseEntity<List<CompatibleBlood>> getAll(

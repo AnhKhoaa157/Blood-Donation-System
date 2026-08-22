@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 
 import org.fpt.blooddonate.models.User;
 import org.fpt.blooddonate.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +20,19 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final BloodRepository bloodRepository;
+    private final CompatibleBloodRepository compatibleBloodRepository;
 
-    @Autowired
-    private BloodRepository bloodRepository;
-
-    @Autowired
-    private CompatibleBloodRepository compatibleBloodRepository;
+    public UserService(
+            UserRepository userRepository,
+            BloodRepository bloodRepository,
+            CompatibleBloodRepository compatibleBloodRepository
+    ) {
+        this.userRepository = userRepository;
+        this.bloodRepository = bloodRepository;
+        this.compatibleBloodRepository = compatibleBloodRepository;
+    }
 
     public Page<User> getAll(int page, String role, String keyword) {
         Pageable pageable = PageRequest.of(page - 1, 10);

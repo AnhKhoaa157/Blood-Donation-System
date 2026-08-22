@@ -1,10 +1,10 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CreateCompatibleBloodDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateStatusCompatibleBlood;
 import org.fpt.blooddonate.services.CompatibleBloodService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +12,9 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/admin/compatible-bloods")
+@RequiredArgsConstructor
 public class AdminCompatibleBloodController {
-    @Autowired
-    private CompatibleBloodService compatibleBloodService;
+    private final CompatibleBloodService compatibleBloodService;
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CreateCompatibleBloodDTO payload) throws IOException {

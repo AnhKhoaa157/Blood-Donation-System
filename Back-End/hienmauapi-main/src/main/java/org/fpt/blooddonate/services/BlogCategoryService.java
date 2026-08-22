@@ -5,7 +5,6 @@ import org.fpt.blooddonate.dtos.requests.CreateBlogCategoryRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateBlogCategoryRequestDTO;
 import org.fpt.blooddonate.models.BlogCategory;
 import org.fpt.blooddonate.repositories.BlogCategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.Optional;
 
 @Service
 public class BlogCategoryService {
-    @Autowired
-    private BlogCategoryRepository repository;
+    private final BlogCategoryRepository repository;
+
+    public BlogCategoryService(BlogCategoryRepository repository) {
+        this.repository = repository;
+    }
 
     public List<BlogCategory> getAll() {
         return repository.findAll();

@@ -1,11 +1,11 @@
 package org.fpt.blooddonate.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.fpt.blooddonate.dtos.requests.CreateBlogCategoryRequestDTO;
 import org.fpt.blooddonate.dtos.requests.UpdateBlogCategoryRequestDTO;
 import org.fpt.blooddonate.models.BlogCategory;
 import org.fpt.blooddonate.services.BlogCategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +14,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/blog-categories")
+@RequiredArgsConstructor
 public class BlogCategoryController {
-    @Autowired
-    private BlogCategoryService blogCategoryService;
+    private final BlogCategoryService blogCategoryService;
 
     @GetMapping
     public ResponseEntity<List<BlogCategory>> getAll() {

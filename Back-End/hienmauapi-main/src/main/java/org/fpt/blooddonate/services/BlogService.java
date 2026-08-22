@@ -7,7 +7,6 @@ import org.fpt.blooddonate.models.Blog;
 import org.fpt.blooddonate.models.BlogCategory;
 import org.fpt.blooddonate.repositories.BlogCategoryRepository;
 import org.fpt.blooddonate.repositories.BlogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -25,11 +24,13 @@ import java.util.Optional;
 
 @Service
 public class BlogService {
-    @Autowired
-    private BlogRepository repository;
+    private final BlogRepository repository;
+    private final BlogCategoryRepository blogCategoryRepository;
 
-    @Autowired
-    private BlogCategoryRepository blogCategoryRepository;
+    public BlogService(BlogRepository repository, BlogCategoryRepository blogCategoryRepository) {
+        this.repository = repository;
+        this.blogCategoryRepository = blogCategoryRepository;
+    }
 
     public Page<Blog> getAll(int page, Integer categoryId, Integer status, String keyword) {
         Pageable pageable = PageRequest.of(page - 1, 10);
