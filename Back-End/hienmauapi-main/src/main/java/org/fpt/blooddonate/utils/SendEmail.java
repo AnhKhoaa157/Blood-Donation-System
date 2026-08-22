@@ -13,25 +13,18 @@ import org.fpt.blooddonate.models.BloodDonationRequest;
 import org.fpt.blooddonate.models.BloodReceiveRequest;
 import org.fpt.blooddonate.models.User;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 public class SendEmail {
     public static void changeBloodDonationRequestStatus(User user, BloodDonationRequest bloodDonationRequest, String status) {
-        final String username = "minhthienaap@gmail.com";
-        final String password = "mjwn phlo jdjz oayc";
-
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+        String username = resolveSetting("SMTP_USERNAME");
+        String password = resolveSetting("SMTP_PASSWORD");
+        if (username.isBlank() || password.isBlank()) {
+            return;
+        }
+        Session session = createSession(username, password);
 
         try {
             Message message = new MimeMessage(session);
@@ -41,13 +34,13 @@ public class SendEmail {
                 InternetAddress.parse(user.getEmail())
             );
 
-            if (status.equals("xác nhận")) {
+            if (status.equals("xacnhan")) {
                 message.setSubject("Xác nhận yêu cầu hiến máu");
                 message.setContent(SendEmail.getBloodDonationRequestWhenApproved(user, bloodDonationRequest), "text/html; charset=utf-8");
-            } else if (status.equals("từ chối")) {
+            } else if (status.equals("tuchoi")) {
                 message.setSubject("Từ chối yêu cầu hiến máu");
                 message.setContent(SendEmail.getBloodDonationRequestWhenRejected(user, bloodDonationRequest), "text/html; charset=utf-8");
-            } else if (status.equals("đã hiến")) {
+            } else if (status.equals("dahien")) {
                 message.setSubject("Yêu cầu hiến máu hoàn thiện");
                 message.setContent(SendEmail.getBloodDonationRequestWhenCompleted(user, bloodDonationRequest), "text/html; charset=utf-8");
             } else {
@@ -324,21 +317,12 @@ public class SendEmail {
     }
 
     public static void changeBloodReceiveRequestStatus(User user, BloodReceiveRequest bloodReceiveRequest, String status) {
-        final String username = "minhthienaap@gmail.com";
-        final String password = "mjwn phlo jdjz oayc";
-
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+        String username = resolveSetting("SMTP_USERNAME");
+        String password = resolveSetting("SMTP_PASSWORD");
+        if (username.isBlank() || password.isBlank()) {
+            return;
+        }
+        Session session = createSession(username, password);
 
         try {
             Message message = new MimeMessage(session);
@@ -348,13 +332,13 @@ public class SendEmail {
                     InternetAddress.parse(user.getEmail())
             );
 
-            if (status.equals("đã có máu")) {
+            if (status.equals("dacomau")) {
                 message.setSubject("Đã có máu");
                 message.setContent(SendEmail.getBloodDonationReceiveWhenApproved(user, bloodReceiveRequest), "text/html; charset=utf-8");
-            } else if (status.equals("huỷ")) {
+            } else if (status.equals("huy")) {
                 message.setSubject("Huỷ yêu cầu nhận máu");
                 message.setContent(SendEmail.getBloodDonationReceiveWhenRejected(user, bloodReceiveRequest), "text/html; charset=utf-8");
-            } else if (status.equals("đã hoàn thành")) {
+            } else if (status.equals("dahoanthanh")) {
                 message.setSubject("Yêu cầu nhận máu đã hoàn thành");
                 message.setContent(SendEmail.getBloodDonationReceiveWhenCompleted(user, bloodReceiveRequest), "text/html; charset=utf-8");
             } else {
@@ -701,21 +685,12 @@ public class SendEmail {
     }
 
     public static void changeSupportTicketStatus(String email, int id, String status) {
-        final String username = "minhthienaap@gmail.com";
-        final String password = "mjwn phlo jdjz oayc";
-
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+        String username = resolveSetting("SMTP_USERNAME");
+        String password = resolveSetting("SMTP_PASSWORD");
+        if (username.isBlank() || password.isBlank()) {
+            return;
+        }
+        Session session = createSession(username, password);
 
         try {
             Message message = new MimeMessage(session);
@@ -729,6 +704,55 @@ public class SendEmail {
             Transport.send(message);
         } catch (MessagingException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    private static Session createSession(String username, String password) {
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", settingOrDefault("SMTP_HOST", "smtp.gmail.com"));
+        props.put("mail.smtp.port", settingOrDefault("SMTP_PORT", "587"));
+        return Session.getInstance(props, new jakarta.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+    }
+
+    private static String settingOrDefault(String key, String defaultValue) {
+        String value = resolveSetting(key);
+        return value.isBlank() ? defaultValue : value;
+    }
+
+    private static String resolveSetting(String key) {
+        String value = System.getenv(key);
+        if (value == null || value.isBlank()) {
+            value = System.getProperty(key);
+        }
+        if (value == null || value.isBlank()) {
+            value = readDotEnv(key);
+        }
+        return value == null ? "" : value.trim();
+    }
+
+    private static String readDotEnv(String key) {
+        try {
+            Path envFile = Path.of(".env");
+            if (!Files.isRegularFile(envFile)) {
+                return "";
+            }
+            return Files.readAllLines(envFile).stream()
+                    .map(String::trim)
+                    .filter(line -> !line.isBlank() && !line.startsWith("#"))
+                    .filter(line -> line.startsWith(key + "="))
+                    .map(line -> line.substring(key.length() + 1).trim())
+                    .map(value -> value.replaceAll("^\\\"|\\\"$|^'|'$", ""))
+                    .findFirst()
+                    .orElse("");
+        } catch (Exception ignored) {
+            return "";
         }
     }
 }
