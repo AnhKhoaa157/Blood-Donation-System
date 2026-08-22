@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "NhomMau")
+@Table(name = "blood_types")
 @Data
 @NoArgsConstructor
 public class Blood {
@@ -19,19 +21,20 @@ public class Blood {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(name = "name", nullable = false, unique = true, length = 255)
     private String ten;
 
-    @Column(columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "description")
     private String mota;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 1", length = 1)
+    @Column(name = "status", nullable = false)
     private Integer trangThai = 1;
 
-    @Column(name = "NgayTao", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime ngayTao;
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat;
 
     @PrePersist

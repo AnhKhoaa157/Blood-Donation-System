@@ -3,11 +3,16 @@ package org.fpt.blooddonate.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.fpt.blooddonate.models.enums.SupportTicketStatus;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "LichSuLienHeHoTro")
+@Table(name = "support_ticket_history", indexes = {
+        @Index(name = "idx_support_ticket_history_support_ticket_id", columnList = "support_ticket_id")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,24 +23,26 @@ public class SupportTicketHistory {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "HoTroId")
+    @JoinColumn(name = "support_ticket_id")
     @JsonBackReference
     private SupportTicket supportTicket;
 
     @ManyToOne
-    @JoinColumn(name = "NguoiHoTroId", nullable = false)
+    @JoinColumn(name = "supporter_id", nullable = false)
     private User supporter;
 
-    @Column(name = "ghichu", nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "notes", nullable = false)
     private String ghiChu;
 
-    @Column(name = "trangthai", nullable = false, columnDefinition = "ENUM('moi','dangxuly','hoanthanh','dahuy')")
-    private String trangThai = "moi";
+    @Convert(converter = SupportTicketStatus.JpaConverter.class)
+    @Column(name = "status", nullable = false, length = 20)
+    private SupportTicketStatus trangThai = SupportTicketStatus.NEW;
 
-    @Column(name = "ngaytao", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime ngayTao;
 
-    @Column(name = "ngaycapnhat", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime ngayCapNhat;
 
     @PrePersist

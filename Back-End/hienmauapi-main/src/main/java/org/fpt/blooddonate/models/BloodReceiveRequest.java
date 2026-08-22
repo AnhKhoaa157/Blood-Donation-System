@@ -3,12 +3,18 @@ package org.fpt.blooddonate.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.fpt.blooddonate.models.converters.LegacyDomainValueConverter;
+import org.fpt.blooddonate.models.enums.BloodReceiveRequestStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "YeuCauCanMau")
+@Table(name = "blood_requests", indexes = {
+        @Index(name = "idx_blood_requests_status_scheduled_date", columnList = "status,scheduled_receive_date"),
+        @Index(name = "idx_blood_requests_recipient_id", columnList = "recipient_id"),
+        @Index(name = "idx_blood_requests_blood_type_id", columnList = "blood_type_id")
+})
 @Data
 @NoArgsConstructor
 public class BloodReceiveRequest {
@@ -17,57 +23,67 @@ public class BloodReceiveRequest {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "NguoiNhanId")
+    @JoinColumn(name = "recipient_id")
     private User nguoiNhan;
 
+    @Column(name = "scheduled_receive_date")
     private LocalDate ngayNhanMauDuKien;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "NhomMauId", nullable = false)
+    @JoinColumn(name = "blood_type_id", nullable = false)
     private Blood nhomMau;
 
-    @Column(length = 255)
+    @Convert(converter = LegacyDomainValueConverter.class)
+    @Column(name = "required_blood_component", length = 255)
     private String thanhPhanMauCan;
 
-    @Column(nullable = false)
+    @Column(name = "quantity_units", nullable = false)
     private Integer soLuongDonVi;
 
+    @Column(name = "reason")
     private String lyDo;
 
-    @Column(nullable = false)
+    @Column(name = "urgent", nullable = false)
     private Boolean khanCap = false;
 
-    @Column(length = 255)
+    @Column(name = "receiving_address", length = 255)
     private String diaChiNhanMau;
 
+    @Column(name = "notes")
     private String ghiChu;
 
     @ManyToOne
-    @JoinColumn(name = "NguoiDuyetId")
+    @JoinColumn(name = "approved_by_id")
     private User nguoiDuyet;
 
+    @Column(name = "approved_at")
     private LocalDateTime ngayDuyet;
 
-    @Column(name = "TrangThai", nullable = false)
-    private String trangThai = "dangcho";
+    @Convert(converter = BloodReceiveRequestStatus.JpaConverter.class)
+    @Column(name = "status", nullable = false, length = 20)
+    private BloodReceiveRequestStatus trangThai = BloodReceiveRequestStatus.PENDING;
 
-    @Column(name = "SucKhoeHienTai", nullable = true)
+    @Column(name = "current_health", nullable = true)
     private String sucKhoeHienTai = "";
 
-    @Column(name = "DangMangThai", nullable = true)
+    @Column(name = "pregnancy_flag", nullable = true)
     private int dangMangThai = 0;
 
-    @Column(name = "FormKham", nullable = true)
+    @Column(name = "screening_form", nullable = true)
     private String formKham = "";
 
-    @Column(name = "MacBenhTruyenNhiem", nullable = true)
+    @Column(name = "infectious_disease_flag", nullable = true)
     private int macBenhTruyenNhiem = 0;
 
-    @Column(name = "NgayTao", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime ngayTao = LocalDateTime.now();
 
-    @Column(name = "NgayCapNhat")
+    @Column(name = "updated_at")
     private LocalDateTime ngayCapNhat = LocalDateTime.now();
+
+    @Version
+    @Column(nullable = false)
+    private long version;
 
     @PreUpdate
     public void preUpdate() {
