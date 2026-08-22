@@ -27,6 +27,7 @@ public class UpdateBloodDonationActivityRequestDTO {
     @NotBlank()
     private String trangthai;
 
+    @NotNull
     @Positive()
     private Integer soLuongNguoiToiDa;
 }

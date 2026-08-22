@@ -18,15 +18,21 @@ public class CreateBloodDonationRequestDTO {
     private String ghiChu;
 
     @NotNull
+    @Positive
+    @Max(2000)
     private int soLuong;
 
     @NotBlank()
     private String sucKhoeHienTai;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private int dangMangThai;
 
     @NotNull
+    @Min(0)
+    @Max(1)
     private int macBenhTruyenNhiem;
 
     @NotBlank()
